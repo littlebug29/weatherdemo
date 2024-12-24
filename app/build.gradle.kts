@@ -21,7 +21,7 @@ android {
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         val apiKey = rootProject.properties.getValue("apiKey") as String
-        buildConfigField("String", "BASE_URL", "\"http://api.weatherapi.com/v1/\"")
+        buildConfigField("String", "BASE_URL", "\"https://api.weatherapi.com/v1/\"")
         buildConfigField("String", "API_KEY", apiKey)
     }
 
@@ -62,7 +62,7 @@ dependencies {
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
-    implementation(libs.coil)
+    implementation(libs.glide)
 
     // DI
     implementation(libs.hilt)
