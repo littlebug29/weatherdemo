@@ -8,21 +8,41 @@ import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
+import kotlinx.serialization.json.Json
+import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
+import okhttp3.logging.HttpLoggingInterceptor
+import okhttp3.logging.HttpLoggingInterceptor.Level
 import retrofit2.Retrofit
+import retrofit2.converter.kotlinx.serialization.asConverterFactory
 
 @Module
 @InstallIn(SingletonComponent::class)
 class RemoteModule {
 
     @Provides
-    fun provideHttpClient(): OkHttpClient = OkHttpClient.Builder().build()
+    fun provideLoggingInterceptor(): HttpLoggingInterceptor = HttpLoggingInterceptor().apply {
+        level = if (BuildConfig.DEBUG) Level.BODY else Level.NONE
+    }
 
     @Provides
-    fun provideRetrofit(httpClient: OkHttpClient): Retrofit = Retrofit.Builder()
-        .baseUrl(BuildConfig.BASE_URL)
-        .client(httpClient)
-        .build()
+    fun provideHttpClient(interceptor: HttpLoggingInterceptor): OkHttpClient =
+        OkHttpClient.Builder()
+            .addInterceptor(interceptor)
+            .build()
+
+    @Provides
+    fun provideRetrofit(httpClient: OkHttpClient): Retrofit {
+        val jsonConfig = Json {
+            ignoreUnknownKeys = true
+            isLenient = true
+        }
+        return Retrofit.Builder()
+            .baseUrl(BuildConfig.BASE_URL)
+            .client(httpClient)
+            .addConverterFactory(jsonConfig.asConverterFactory("application/json".toMediaType()))
+            .build()
+    }
 
     @Provides
     fun provideWeatherService(retrofit: Retrofit): WeatherService =
