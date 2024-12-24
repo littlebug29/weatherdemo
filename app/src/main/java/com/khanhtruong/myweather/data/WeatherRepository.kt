@@ -31,7 +31,7 @@ class WeatherRepository @Inject constructor(
         .mapNotNull {
             WeatherEntity(
                 name = it.location.name,
-                weatherIcon = it.current.condition.icon,
+                weatherIcon = "https:${it.current.condition.icon}",
                 humidity = it.current.humidity,
                 uv = it.current.uv,
                 feelsLike = it.current.feelLikeC,
@@ -54,7 +54,7 @@ class WeatherRepository @Inject constructor(
                     LocationSearchResultEntity(
                         name = weatherResp.location.name,
                         tempC = weatherResp.current.tempC,
-                        iconUrl = weatherResp.current.condition.icon
+                        iconUrl = "https:${weatherResp.current.condition.icon}"
                     )
                 }
         }

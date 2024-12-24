@@ -11,11 +11,12 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filter
-import kotlinx.coroutines.flow.flatMapConcat
-import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -41,18 +42,20 @@ class MainViewModel @Inject constructor(
                 .collect {
                     mutableWeatherInfoState.value = ScreenState.Success(it)
                 }
-            mutableLocationSearchQueryFlow
-                .debounce(200)
-                .filter { it.isNotEmpty() }
-                .distinctUntilChanged()
-                .flatMapConcat {
-                    flowOf(weatherRepository.searchForLocation(it))
-                }
-                .onEach { mutableSearchResultFlow.value = ScreenState.Success(it) }
         }
+        mutableLocationSearchQueryFlow
+            .debounce(200)
+            .filter { it.isNotEmpty() }
+            .distinctUntilChanged()
+            .map { weatherRepository.searchForLocation(it) }
+            .catch { mutableSearchResultFlow.value = ScreenState.Empty }
+            .onEach {
+                mutableSearchResultFlow.value = ScreenState.Success(it)
+            }
+            .launchIn(viewModelScope)
     }
 
-    fun search(query: String) {
+    fun search(query: String) = viewModelScope.launch {
         mutableLocationSearchQueryFlow.value = query
     }
 
