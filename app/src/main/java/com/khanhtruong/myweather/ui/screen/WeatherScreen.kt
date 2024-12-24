@@ -2,7 +2,6 @@ package com.khanhtruong.myweather.ui.screen
 
 import android.util.Log
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -12,17 +11,12 @@ import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.ime
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.systemBars
-import androidx.compose.foundation.layout.windowInsetsBottomHeight
 import androidx.compose.foundation.layout.windowInsetsTopHeight
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -40,6 +34,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -49,10 +44,11 @@ import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import com.khanhtruong.myweather.MainViewModel
 import com.khanhtruong.myweather.R
-import com.khanhtruong.myweather.data.entity.LocationSearchResultEntity
 import com.khanhtruong.myweather.data.entity.WeatherEntity
 import com.khanhtruong.myweather.ui.ScreenState
 import com.khanhtruong.myweather.ui.theme.Gray20
+import com.khanhtruong.myweather.ui.theme.Gray40
+import com.khanhtruong.myweather.ui.theme.Gray77
 
 @Composable
 fun MyWeatherScreen(
@@ -85,7 +81,6 @@ fun MyWeatherScreen(
         } else {
             MainContent(weatherState)
         }
-        Spacer(Modifier.windowInsetsBottomHeight(WindowInsets.ime))
     }
 }
 
@@ -137,71 +132,6 @@ fun SearchBox(
                 cursorColor = MaterialTheme.colorScheme.primary
             )
         )
-    }
-}
-
-@Composable
-fun SearchResultContent(
-    result: ScreenState<List<LocationSearchResultEntity>>,
-    onSelect: (String) -> Unit
-) {
-    when (result) {
-        ScreenState.Empty -> Spacer(modifier = Modifier.fillMaxSize())
-        is ScreenState.Success -> SearchList(result.data, onSelect)
-    }
-}
-
-@Composable
-fun SearchList(
-    searchResultList: List<LocationSearchResultEntity>,
-    onItemClick: (String) -> Unit
-) {
-    LazyColumn {
-        items(searchResultList) { searchResult ->
-            WeatherResultItem(searchResult, onClick = onItemClick)
-        }
-    }
-}
-
-@OptIn(ExperimentalGlideComposeApi::class)
-@Composable
-fun WeatherResultItem(
-    searchResult: LocationSearchResultEntity,
-    onClick: (String) -> Unit
-) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(16.dp)
-            .clip(RoundedCornerShape(16.dp))
-            .background(Color(0xFFF2F2F2))
-            .padding(horizontal = 24.dp, vertical = 16.dp)
-            .clickable(enabled = true) {
-                onClick(searchResult.name)
-            },
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Column {
-            Text(
-                text = searchResult.name,
-                fontSize = 24.sp,
-                lineHeight = 30.sp,
-                fontWeight = FontWeight.Bold
-            )
-            Spacer(modifier = Modifier.height(4.dp))
-            Text(
-                text = "${searchResult.tempC}°",
-                fontSize = 48.sp,
-                fontWeight = FontWeight.Bold
-            )
-        }
-        Spacer(modifier = Modifier.weight(1f))
-        GlideImage(
-            model = searchResult.iconUrl,
-            contentDescription = "Weather Icon",
-            modifier = Modifier.size(83.dp, 67.dp)
-        )
-
     }
 }
 
@@ -266,7 +196,7 @@ fun WeatherInfoScreen(weatherEntity: WeatherEntity) {
                 lineHeight = 45.sp
             )
             Icon(
-                imageVector = Icons.Default.LocationOn,
+                painter = painterResource(R.drawable.ic_location),
                 contentDescription = "Location",
                 modifier = Modifier
                     .padding(start = 4.dp)
@@ -310,8 +240,8 @@ fun WeatherDetails(
 @Composable
 fun WeatherInfo(label: String, value: String) {
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
-        Text(text = label, color = Color.Gray, fontSize = 14.sp)
-        Text(text = value, fontWeight = FontWeight.Bold, fontSize = 20.sp)
+        Text(text = label, color = Gray77, fontSize = 14.sp)
+        Text(text = value, color = Gray40, fontWeight = FontWeight.Bold, fontSize = 20.sp)
     }
 }
 
