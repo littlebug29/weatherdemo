@@ -7,7 +7,7 @@
 Before you begin, ensure you have the following installed:
 
 - **Android Studio Flamingo** or later
-- **Android SDK 33**
+- **Android SDK 35**
 - **Kotlin 2.0.0** or later
 - **Gradle 8.3** or later
 
